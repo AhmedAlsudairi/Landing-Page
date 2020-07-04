@@ -18,7 +18,8 @@
  * 
 */
 
-const navbarList = document.getElementById('navbar__list'); //navigation bar 
+//navigation bar 
+const navbarList = document.getElementById('navbar__list');
 
 /**
  * End Global Variables
@@ -142,12 +143,17 @@ const setActiveClassScroll = () => {
 */
 
 // Build menu 
-document.addEventListener('load', buildNavbar()); // navigation will be built when the document is loaded
+// navigation will be built when the document is loaded
+document.addEventListener('load', buildNavbar()); 
 
 // Scroll to section on link click
-navbarList.addEventListener('click', (event) => { scrollToSection(event); }); //the browser will scroll when the section link is clicked
+//the browser will scroll when the section link is clicked
+navbarList.addEventListener('click', (event) => { scrollToSection(event); }); 
 
 // Set sections as active
-navbarList.addEventListener('click', (event) => { setActiveClassClick(event); }); // the section will be activated when the section link is clicked
-window.addEventListener('scroll', () => { setActiveClassScroll(); }); // the section will be activated when near top of viewport of the section
+// the section will be activated when the section link is clicked
+navbarList.addEventListener('click', (event) => { setActiveClassClick(event); }); 
+
+// the section will be activated when near top of viewport of the section
+window.addEventListener('scroll', () => { setActiveClassScroll(); }); 
 
