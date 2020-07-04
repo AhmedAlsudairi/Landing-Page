@@ -17,20 +17,19 @@
  * Define Global Variables
  * 
 */
-const navbarList = document.getElementById('navbar__list');
-//
-const numOfSections = 5;
 
-const sectionsList = [5];
+const navbarList = document.getElementById('navbar__list'); //navigation bar 
 
-let activeSection='main__hero';
+
 
 /**
  * End Global Variables
  * Start Helper Functions
  * 
 */
+const activateSection = (secttion , sectionLink) => {
 
+}
 
 
 /**
@@ -45,9 +44,6 @@ const buildNavbar = () => {
     const main = document.querySelector('main');
     const sections = main.getElementsByTagName('section');
     let i = 1;
-    const homeItem = document.createElement('li');
-    homeItem.innerHTML='<a href="#top">Home</a>';
-    navbarList.appendChild(homeItem);
     for(let section of sections){
        const sectionItem = document.createElement('li');
        sectionItem.innerHTML = `<a href="#section${i}">Section ${i}</a>`;
@@ -75,9 +71,9 @@ const addClassActive = (event) => {
         const sectionID = activeSection.getAttribute('href');
         const section = document.querySelector(sectionID);
 
-        if(section != null){
+    
             section.classList.add('your-active-class');
-        }
+
         
     
         // links
@@ -101,13 +97,7 @@ const scrollToSection = (event) => {
     event.preventDefault();
     if(event.target.nodeName==='A'){
     const sectionID = event.target.getAttribute('href');
-    if(sectionID=='#top'){
-        window.scrollTo({
-            top:0,
-            behavior: 'smooth'
-        });
-        return;
-    }
+
     document.querySelector(sectionID).scrollIntoView({
         behavior: 'smooth'
       });
@@ -115,59 +105,46 @@ const scrollToSection = (event) => {
 }
 
 const changeActiveSection = (event) => {
-    // const currentPostion = $(document).scrollTop();
-    // console.log(currentPostion);
+    const currentPostion = document.querySelector('html').scrollTop;
+   
     
-    // const links = document.querySelectorAll('.navbar__menu li a');
+    const links = document.querySelectorAll('.navbar__menu li a');
     
     
     
-    // for(let link of links){
+    for(let link of links){
 
-    //     let currentLink = link;
+        let currentLink = link;
+        let refranceSection = document.querySelector(currentLink.getAttribute('href'));
+    
+        if(refranceSection.offsetTop-200 <= currentPostion && refranceSection.offsetTop-200 + refranceSection.offsetHeight > currentPostion){
+
+                //sections
+        const sections = document.querySelectorAll('main section');
+
+        for(let section of sections){
+            section.classList.remove('your-active-class');
+        }
+
+            refranceSection.classList.add('your-active-class');
+
+        //
+
+            for(let linkItem of links){
+                link.parentElement.classList.remove('activeSectionItem');
+                linkItem.setAttribute('style','');
+            }
+            currentLink.parentElement.classList.add('activeSectionItem');
+            currentLink.setAttribute('style','color: rgba(0, 13, 60, 1);');
+        }else{
+            link.parentElement.classList.remove('activeSectionItem');
+            currentLink.setAttribute('style','');
+        }
+
         
-    //     if(currentLink.innerHTML!=='Home'){
-    //           let refranceSection = document.querySelector(currentLink.getAttribute('href'));
-        
-    //     if(refranceSection.getBoundingClientRect().top <= currentPostion && refranceSection.getBoundingClientRect().top+refranceSection.getBoundingClientRect().height > currentPostion){
-
-    //         for(let linkItem of links){
-    //             linkItem.setAttribute('style','');
-    //         }
-    //         currentLink.setAttribute('style','color: green');
-    //     }else{
-    //         currentLink.setAttribute('style','');
-    //     }
-
-    //     }
       
-    //     }
-    var scrollPos = $(document).scrollTop();
-    $('.navbar__menu li a').each(function () {
-        var currLink = $(this);
-        var refElement = $(currLink.attr("href"));
-        
-        if(currLink.attr("href") !=='#top'){
-            console.log(refElement);
-        if (refElement.position().top <= scrollPos && refElement.position().top + refElement.height() > scrollPos) {
-            $('.navbar__menu li a').attr('style','');
-            currLink.attr('style','color: green');
         }
-        else{
-            currLink.attr('style','');
-        }
-    }
-    });
 
-        // for(let section of sections){
-        //     const sectionOffset = section.getBoundingClientRect().top;
-        //     console.log(sectionOffset);
-            
-        //     if(sectionOffset<200 && sectionOffset>=-200){
-        //         section.classList.add('your-active-class');
-        //         items[i].classList.add('activeSectionItem')
-        //     }
-        //     i++;
     }
 
 /**
@@ -177,10 +154,10 @@ const changeActiveSection = (event) => {
 */
 
 // Build menu 
-document.addEventListener('load',buildNavbar());
+document.addEventListener('load',buildNavbar()); // navigation will be built when the document is loaded
 
 // Scroll to section on link click
-navbarList.addEventListener('click',(event) => { scrollToSection(event); });
+navbarList.addEventListener('click',(event) => { scrollToSection(event); }); //the browser will scroll when the user click on section link
 // Set sections as active
 
 navbarList.addEventListener('click',(event) => { addClassActive(event); });
