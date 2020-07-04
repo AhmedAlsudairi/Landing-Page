@@ -20,17 +20,46 @@
 
 const navbarList = document.getElementById('navbar__list'); //navigation bar 
 
-
-
 /**
  * End Global Variables
  * Start Helper Functions
  * 
 */
-const activateSection = (secttion , sectionLink) => {
 
+// this function will add (your-active-class) class to section that referenced by the given link
+const activateSection = (sectionLink) => {
+
+    // get all sections
+    const sections = document.querySelectorAll('main section');
+
+    // remove (your-active-class) class from all sections
+    for (let section of sections) {
+        section.classList.remove('your-active-class');
+    }
+
+    // add (your-active-class) class to the current section
+    const sectionID = sectionLink.getAttribute('href');
+    const section = document.querySelector(sectionID);
+    section.classList.add('your-active-class');
 }
 
+// this function will add (activeSectionItem) class to list item that referenced by the given link, and change the color of the given link
+const activateSectionLink = (sectionLink) => {
+
+    //get all li elements from navigation bar
+    const linkItems = document.querySelectorAll('.navbar__menu li');
+
+    // remove (activeSectionItem) class from all li elements, and set link color to default
+    for (let linkItem of linkItems) {
+        linkItem.classList.remove('activeSectionItem');
+        linkItem.firstChild.setAttribute('style', '');
+    }
+
+    // add (activeSectionItem) class to the li reference to current section, and change link color
+    sectionLink.setAttribute('style', 'color: rgba(0, 13, 60, 1);');
+    const activeSectionItem = sectionLink.parentElement;
+    activeSectionItem.classList.add('activeSectionItem');
+}
 
 /**
  * End Helper Functions
@@ -40,112 +69,71 @@ const activateSection = (secttion , sectionLink) => {
 
 // build the nav
 const buildNavbar = () => {
-    const navbarList = document.getElementById('navbar__list');
+
+    // get all the sections dynamically
     const main = document.querySelector('main');
     const sections = main.getElementsByTagName('section');
-    let i = 1;
-    for(let section of sections){
-       const sectionItem = document.createElement('li');
-       sectionItem.innerHTML = `<a href="#section${i}">Section ${i}</a>`;
-       navbarList.appendChild(sectionItem);
-       i++;
-    }
 
-}
-
-
-
-// Add class 'active' to section when near top of viewport
-
-const addClassActive = (event) => {
-    const activeSection = event.target;
-    
-    if(activeSection.nodeName==='A'){
-        //section
-        const sections = document.querySelectorAll('main section');
-
-        for(let section of sections){
-            section.classList.remove('your-active-class');
-        }
-
-        const sectionID = activeSection.getAttribute('href');
-        const section = document.querySelector(sectionID);
-
-    
-            section.classList.add('your-active-class');
-
-        
-    
-        // links
-        const linkItems = document.querySelectorAll('.navbar__menu li');
-
-        for(let linkItem of linkItems){
-            linkItem.classList.remove('activeSectionItem');
-            linkItem.firstChild.setAttribute('style','');
-        }
-
-        activeSection.setAttribute('style','color: rgba(0, 13, 60, 1);');
-      const  activeSectionItem = activeSection.parentElement;
-        activeSectionItem.classList.add('activeSectionItem');
-        
+    // create li and a elements for each section, then append them to the navigation bar
+    for (let i = 0; i < sections.length; i++) {
+        const sectionItem = document.createElement('li');
+        sectionItem.innerHTML = `<a href="#section${i+1}">${sections[i].getAttribute('data-nav')}</a>`;
+        navbarList.appendChild(sectionItem);
     }
 }
 
 // Scroll to anchor ID using scrollTO event
-
 const scrollToSection = (event) => {
-    event.preventDefault();
-    if(event.target.nodeName==='A'){
-    const sectionID = event.target.getAttribute('href');
 
-    document.querySelector(sectionID).scrollIntoView({
-        behavior: 'smooth'
-      });
+    // prevent default jump to the referenced element
+    event.preventDefault();
+
+    // scroll to section element referenced by the link
+    if (event.target.nodeName === 'A') {
+        const sectionID = event.target.getAttribute('href');
+        document.querySelector(sectionID).scrollIntoView({
+            behavior: 'smooth'
+        });
     }
 }
 
-const changeActiveSection = (event) => {
-    const currentPostion = document.querySelector('html').scrollTop;
-   
-    
-    const links = document.querySelectorAll('.navbar__menu li a');
-    
-    
-    
-    for(let link of links){
+// Add class 'active' to section when near top of viewport
 
-        let currentLink = link;
-        let refranceSection = document.querySelector(currentLink.getAttribute('href'));
-    
-        if(refranceSection.offsetTop-200 <= currentPostion && refranceSection.offsetTop-200 + refranceSection.offsetHeight > currentPostion){
+// activate section and section link when the section link is clicked
+const setActiveClassClick = (event) => {
 
-                //sections
-        const sections = document.querySelectorAll('main section');
-
-        for(let section of sections){
-            section.classList.remove('your-active-class');
-        }
-
-            refranceSection.classList.add('your-active-class');
-
-        //
-
-            for(let linkItem of links){
-                link.parentElement.classList.remove('activeSectionItem');
-                linkItem.setAttribute('style','');
-            }
-            currentLink.parentElement.classList.add('activeSectionItem');
-            currentLink.setAttribute('style','color: rgba(0, 13, 60, 1);');
-        }else{
-            link.parentElement.classList.remove('activeSectionItem');
-            currentLink.setAttribute('style','');
-        }
-
-        
-      
-        }
-
+    // get the clicked link
+    const sectionLink = event.target;
+    if (sectionLink.nodeName === 'A') {
+        activateSection(sectionLink);
+        activateSectionLink(sectionLink);
     }
+}
+
+// activate section and section link when near top of viewport of the section
+const setActiveClassScroll = () => {
+
+    // get current postion
+    const currentPostion = document.querySelector('html').scrollTop;
+
+    // get all a elements from navigation bar
+    const links = document.querySelectorAll('.navbar__menu li a');
+
+    // loop through links to determine the offset for each sections those referenced by links
+    for (let link of links) {
+        const currentLink = link;
+        const refranceSection = document.querySelector(currentLink.getAttribute('href'));
+
+        // compare between the current postion and the section offset to activate the section
+        if (refranceSection.offsetTop - 200 <= currentPostion && refranceSection.offsetTop - 200 + refranceSection.offsetHeight > currentPostion) {
+            activateSection(currentLink);
+            activateSectionLink(currentLink)
+        } else {
+            link.parentElement.classList.remove('activeSectionItem');
+            currentLink.setAttribute('style', '');
+        }
+    }
+}
 
 /**
  * End Main Functions
@@ -154,13 +142,12 @@ const changeActiveSection = (event) => {
 */
 
 // Build menu 
-document.addEventListener('load',buildNavbar()); // navigation will be built when the document is loaded
+document.addEventListener('load', buildNavbar()); // navigation will be built when the document is loaded
 
 // Scroll to section on link click
-navbarList.addEventListener('click',(event) => { scrollToSection(event); }); //the browser will scroll when the user click on section link
+navbarList.addEventListener('click', (event) => { scrollToSection(event); }); //the browser will scroll when the section link is clicked
+
 // Set sections as active
-
-navbarList.addEventListener('click',(event) => { addClassActive(event); });
-
-window.addEventListener('scroll',(event) =>{ changeActiveSection(event); });
+navbarList.addEventListener('click', (event) => { setActiveClassClick(event); }); // the section will be activated when the section link is clicked
+window.addEventListener('scroll', () => { setActiveClassScroll(); }); // the section will be activated when near top of viewport of the section
 
